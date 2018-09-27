@@ -19,34 +19,34 @@ namespace INPTPZ1
             double ymin = -1.5;
             double ymax = 1.5;
 
-            double xstep = (xmax - xmin) / 300;
-            double ystep = (ymax - ymin) / 300;
+            double xstep = (xmax - xmin) / bmp.Width;
+            double ystep = (ymax - ymin) / bmp.Height;
 
-            List<ComplexNumber> koreny = new List<ComplexNumber>();
-            // TODO: poly should be parameterised?
-            Polynomial p = new Polynomial();
-            p.Coe.Add(new ComplexNumber() { Re = 1 });
-            p.Coe.Add(ComplexNumber.Zero);
-            p.Coe.Add(ComplexNumber.Zero);
-            //p.Coe.Add(Cplx.Zero);
-            p.Coe.Add(new ComplexNumber() { Re = 1 });
-            Polynomial pd = p.Derive();
-
-            Console.WriteLine(p);
-            Console.WriteLine(pd);
-
-            var clrs = new Color[]
+            var availableColors = new Color[]
             {
                 Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
             };
 
             var maxid = 0;
 
+            List<ComplexNumber> koreny = new List<ComplexNumber>();
+            // TODO: poly should be parameterised?
+            Polynomial p = new Polynomial();
+            p.Coefficients.Add(new ComplexNumber() { Re = 1 });
+            p.Coefficients.Add(ComplexNumber.Zero);
+            p.Coefficients.Add(ComplexNumber.Zero);
+            //p.Coe.Add(Cplx.Zero);
+            p.Coefficients.Add(new ComplexNumber() { Re = 1 });
+            Polynomial pd = p.Derive();
+
+            Console.WriteLine(p);
+            Console.WriteLine(pd);
+
             // TODO: cleanup!!!
             // for every pixel in image...
-            for (int i = 0; i < 300; i++)
+            for (int i = 0; i < bmp.Height; i++)
             {
-                for (int j = 0; j < 300; j++)
+                for (int j = 0; j < bmp.Width; j++)
                 {
                     // find "world" coordinates of pixel
                     double x = xmin + j * xstep;
@@ -103,7 +103,7 @@ namespace INPTPZ1
                     // colorize pixel according to root number
                     //int vv = id;
                     //int vv = id * 50 + (int)it*5;
-                    var vv = clrs[id % clrs.Length];
+                    var vv = availableColors[id % availableColors.Length];
                     vv = Color.FromArgb(vv.R, vv.G, vv.B);
                     vv = Color.FromArgb(Math.Min(Math.Max(0, vv.R-(int)it*2), 255), Math.Min(Math.Max(0, vv.G - (int)it*2), 255), Math.Min(Math.Max(0, vv.B - (int)it*2), 255));
                     //vv = Math.Min(Math.Max(0, vv), 255);
@@ -130,19 +130,19 @@ namespace INPTPZ1
 
     class Polynomial
     {
-        public List<ComplexNumber> Coe { get; set; }
+        public List<ComplexNumber> Coefficients { get; set; }
 
         public Polynomial()
         {
-            Coe = new List<ComplexNumber>();
+            Coefficients = new List<ComplexNumber>();
         }
 
         public Polynomial Derive()
         {
             Polynomial p = new Polynomial();
-            for (int i = 1; i < Coe.Count; i++)
+            for (int i = 1; i < Coefficients.Count; i++)
             {
-                p.Coe.Add(Coe[i].Multiply(new ComplexNumber() { Re = i }));
+                p.Coefficients.Add(Coefficients[i].Multiply(new ComplexNumber() { Re = i }));
             }
 
             return p;
@@ -151,9 +151,9 @@ namespace INPTPZ1
         public ComplexNumber Eval(ComplexNumber x)
         {
             ComplexNumber s = ComplexNumber.Zero;
-            for (int i = 0; i < Coe.Count; i++)
+            for (int i = 0; i < Coefficients.Count; i++)
             {
-                ComplexNumber coef = Coe[i];
+                ComplexNumber coef = Coefficients[i];
                 ComplexNumber bx = x;
                 int power = i;
 
@@ -173,20 +173,20 @@ namespace INPTPZ1
 
         public override string ToString()
         {
-            string s = "";
-            for (int i = 0; i < Coe.Count; i++)
+            string resultStringRepresentation = "";
+            for (int i = 0; i < Coefficients.Count; i++)
             {
-                s += Coe[i];
+                resultStringRepresentation += Coefficients[i];
                 if (i > 0)
                 {
                     for (int j = 0; j < i; j++)
                     {
-                        s += "x";
+                        resultStringRepresentation += "x";
                     }
                 }
-                s += " + ";
+                resultStringRepresentation += " + ";
             }
-            return s;
+            return resultStringRepresentation;
         }
     }
 
@@ -201,33 +201,30 @@ namespace INPTPZ1
             Im = 0
         };
 
-        public ComplexNumber Multiply(ComplexNumber b)
+        public ComplexNumber Multiply(ComplexNumber secondComplexNumber)
         {
-            ComplexNumber a = this;
             // aRe*bRe + aRe*bIm*i + aIm*bRe*i + aIm*bIm*i*i
             return new ComplexNumber()
             {
-                Re = a.Re * b.Re - a.Im * b.Im,
-                Im = (float)(a.Re * b.Im + a.Im * b.Re)
+                Re = this.Re * secondComplexNumber.Re - this.Im * secondComplexNumber.Im,
+                Im = (float)(this.Re * secondComplexNumber.Im + this.Im * secondComplexNumber.Re)
             };
         }
 
-        public ComplexNumber Add(ComplexNumber b)
+        public ComplexNumber Add(ComplexNumber secondComplexNumber)
         {
-            ComplexNumber a = this;
             return new ComplexNumber()
             {
-                Re = a.Re + b.Re,
-                Im = a.Im + b.Im
+                Re = this.Re + secondComplexNumber.Re,
+                Im = this.Im + secondComplexNumber.Im
             };
         }
-        public ComplexNumber Subtract(ComplexNumber b)
+        public ComplexNumber Subtract(ComplexNumber secondComplexNumber)
         {
-            ComplexNumber a = this;
             return new ComplexNumber()
             {
-                Re = a.Re - b.Re,
-                Im = a.Im - b.Im
+                Re = this.Re - secondComplexNumber.Re,
+                Im = this.Im - secondComplexNumber.Im
             };
         }
 
