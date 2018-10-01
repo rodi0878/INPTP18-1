@@ -43,8 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FractalModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValueObjects\ComplexNumber.cs" />
+    <Compile Include="ValueObjects\Polynome.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
