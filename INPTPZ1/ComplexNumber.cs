@@ -57,6 +57,5 @@
         public static ComplexNumber FromRealNumber(double number) {
             return new ComplexNumber() { Re = number };
         }
-
     }
 }

@@ -24,7 +24,7 @@ namespace INPTPZ1
 
         public ComplexNumber Evaluate(ComplexNumber x)
         {
-            ComplexNumber s = ComplexNumber.Zero;
+            ComplexNumber result = ComplexNumber.Zero;
             for (int i = 0; i < Coefficients.Count; i++)
             {
                 ComplexNumber coef = Coefficients[i];
@@ -39,10 +39,10 @@ namespace INPTPZ1
                     coef = coef.Multiply(bx);
                 }
 
-                s = s.Add(coef);
+                result = result.Add(coef);
             }
 
-            return s;
+            return result;
         }
 
         public override string ToString()
