@@ -33,19 +33,8 @@ namespace INPTPZ1
             double ystep = (ymax - ymin) / 300;
 
             List<Cplx> koreny = new List<Cplx>();
-            // TODO: poly should be parameterised?
-            Poly p = new Poly();
-            p.Coe.Add(new Cplx() { Re = 1 });
-            p.Coe.Add(Cplx.Zero);
-            p.Coe.Add(Cplx.Zero);
-            p.Coe.Add(Cplx.Zero);
-            p.Coe.Add(Cplx.Zero);
-            p.Coe.Add(Cplx.Zero);
-            p.Coe.Add(new Cplx() { Re = 1 });
+            Poly p = new Poly(3);
             Poly pd = p.Derive();
-
-            Console.WriteLine(p);
-            Console.WriteLine(pd);
 
             var clrs = new Color[]
             {
@@ -75,11 +64,9 @@ namespace INPTPZ1
                     if (ox.Im == 0)
                         ox.Im = 0.0001f;
 
-                    //Console.WriteLine(ox);
-
                     // find solution of equation using newton's iteration
                     float it = 0;
-                    for (int q = 0; q< 30; q++)
+                    for (int q = 0; q < 30; q++)
                     {
                         var diff = p.Eval(ox).Divide(pd.Eval(ox));
                         ox = ox.Subtract(diff);
@@ -95,9 +82,9 @@ namespace INPTPZ1
                     // find solution root number
                     var known = false;
                     var id = 0;
-                    for (int w = 0; w <koreny.Count;w++)
+                    for (int w = 0; w < koreny.Count; w++)
                     {
-                        if (Math.Pow(ox.Re- koreny[w].Re, 2) + Math.Pow(ox.Im - koreny[w].Im, 2) <= 0.01)
+                        if (Math.Pow(ox.Re - koreny[w].Re, 2) + Math.Pow(ox.Im - koreny[w].Im, 2) <= 0.01)
                         {
                             known = true;
                             id = w;
@@ -107,13 +94,13 @@ namespace INPTPZ1
                     {
                         koreny.Add(ox);
                         id = koreny.Count;
-                        maxid = id + 1; 
+                        maxid = id + 1;
                     }
 
                     // colorize pixel according to root number
                     var vv = clrs[id % clrs.Length];
                     vv = Color.FromArgb(vv.R, vv.G, vv.B);
-                    vv = Color.FromArgb(Math.Min(Math.Max(0, vv.R-(int)it*2), 255), Math.Min(Math.Max(0, vv.G - (int)it*2), 255), Math.Min(Math.Max(0, vv.B - (int)it*2), 255));
+                    vv = Color.FromArgb(Math.Min(Math.Max(0, vv.R - (int)it * 2), 255), Math.Min(Math.Max(0, vv.G - (int)it * 2), 255), Math.Min(Math.Max(0, vv.B - (int)it * 2), 255));
                     bmp.SetPixel(j, i, vv);
                 }
             }
@@ -129,6 +116,18 @@ namespace INPTPZ1
         public Poly()
         {
             Coe = new List<Cplx>();
+        }
+
+        public Poly(int n)
+        {
+            Coe = new List<Cplx>();
+            
+            Coe.Add(new Cplx() { Re = 1 });
+            for (int i = 0; i < n - 1; i++)
+            {
+                Coe.Add(Cplx.Zero);
+            }
+            Coe.Add(new Cplx() { Re = 1 });
         }
 
         public Poly Derive()
