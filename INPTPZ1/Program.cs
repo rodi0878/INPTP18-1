@@ -43,6 +43,13 @@ namespace INPTPZ1
             };
 
             int maxid = 0;
+            maxid = NewMethod(bmp, xmin, ymin, xstep, ystep, koreny, p, pd, clrs, maxid);
+
+            bmp.Save("../../../out.png");
+        }
+
+        private static int NewMethod(Bitmap bmp, double xmin, double ymin, double xstep, double ystep, List<Cplx> koreny, Poly p, Poly pd, Color[] clrs, int maxid)
+        {
 
             // for every pixel in image...
             for (int i = 0; i < 300; i++)
@@ -58,7 +65,7 @@ namespace INPTPZ1
                 }
             }
 
-            bmp.Save("../../../out.png");
+            return maxid;
         }
 
         private static float FindSolution(Poly p, Poly pd, ref Cplx ox)
