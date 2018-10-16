@@ -22,7 +22,8 @@ namespace INPTPZ1
     {
         static void Main(string[] args)
         {
-            // TODO: add parameters from args?
+            int rootsCount = Convert.ToInt32(args[0]);
+
             Bitmap bmp = new Bitmap(300, 300);
             double xmin = -1;
             double xmax = 1;
@@ -33,7 +34,7 @@ namespace INPTPZ1
             double ystep = (ymax - ymin) / 300;
 
             List<Cplx> koreny = new List<Cplx>();
-            Poly p = new Poly(3);
+            Poly p = new Poly(rootsCount > 0 && rootsCount < 10 ? rootsCount : 0);
             Poly pd = p.Derive();
 
             Color[] clrs = new Color[]
