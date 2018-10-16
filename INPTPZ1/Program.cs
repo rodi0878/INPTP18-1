@@ -36,12 +36,12 @@ namespace INPTPZ1
             Poly p = new Poly(3);
             Poly pd = p.Derive();
 
-            var clrs = new Color[]
+            Color[] clrs = new Color[]
             {
                 Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
             };
 
-            var maxid = 0;
+            int maxid = 0;
 
             // for every pixel in image...
             for (int i = 0; i < 300; i++)
@@ -49,7 +49,7 @@ namespace INPTPZ1
                 for (int j = 0; j < 300; j++)
                 {
                     Cplx ox = FindCoordinates(xmin, ymin, xstep, ystep, i, j);
-                    float it = findSolution(p, pd, ref ox);
+                    float it = FindSolution(p, pd, ref ox);
 
                     int id = FindSolutionRootNumber(koreny, ref maxid, ox);
 
@@ -60,13 +60,13 @@ namespace INPTPZ1
             bmp.Save("../../../out.png");
         }
 
-        private static float findSolution(Poly p, Poly pd, ref Cplx ox)
+        private static float FindSolution(Poly p, Poly pd, ref Cplx ox)
         {
             // find solution of equation using newton's iteration
             float it = 0;
             for (int q = 0; q < 30; q++)
             {
-                var diff = p.Eval(ox).Divide(pd.Eval(ox));
+                Cplx diff = p.Eval(ox).Divide(pd.Eval(ox));
                 ox = ox.Subtract(diff);
 
                 if (Math.Pow(diff.Re, 2) + Math.Pow(diff.Im, 2) >= 0.5)
@@ -100,8 +100,8 @@ namespace INPTPZ1
 
         private static int FindSolutionRootNumber(List<Cplx> koreny, ref int maxid, Cplx ox)
         {
-            var known = false;
-            var id = 0;
+            bool known = false;
+            int id = 0;
             for (int w = 0; w < koreny.Count; w++)
             {
                 if (Math.Pow(ox.Re - koreny[w].Re, 2) + Math.Pow(ox.Im - koreny[w].Im, 2) <= 0.01)
@@ -123,7 +123,7 @@ namespace INPTPZ1
         private static void ColorizePixels(Bitmap bmp, Color[] clrs, int i, int j, float it, int id)
         {
             // colorize pixel according to root number
-            var vv = clrs[id % clrs.Length];
+            Color vv = clrs[id % clrs.Length];
             vv = Color.FromArgb(vv.R, vv.G, vv.B);
             vv = Color.FromArgb(Math.Min(Math.Max(0, vv.R - (int)it * 2), 255), Math.Min(Math.Max(0, vv.G - (int)it * 2), 255), Math.Min(Math.Max(0, vv.B - (int)it * 2), 255));
             bmp.SetPixel(j, i, vv);
@@ -255,8 +255,8 @@ namespace INPTPZ1
             // (aRe + aIm*i) / (bRe + bIm*i)
             // ((aRe + aIm*i) * (bRe - bIm*i)) / ((bRe + bIm*i) * (bRe - bIm*i))
             //  bRe*bRe - bIm*bIm*i*i
-            var tmp = this.Multiply(new Cplx() { Re = b.Re, Im = -b.Im });
-            var tmp2 = b.Re * b.Re + b.Im * b.Im;
+            Cplx tmp = this.Multiply(new Cplx() { Re = b.Re, Im = -b.Im });
+            double tmp2 = b.Re * b.Re + b.Im * b.Im;
 
             return new Cplx()
             {
