@@ -49,20 +49,7 @@ namespace INPTPZ1
             {
                 for (int j = 0; j < 300; j++)
                 {
-                    // find "world" coordinates of pixel
-                    double x = xmin + j * xstep;
-                    double y = ymin + i * ystep;
-
-                    Cplx ox = new Cplx()
-                    {
-                        Re = x,
-                        Im = (float)(y)
-                    };
-
-                    if (ox.Re == 0)
-                        ox.Re = 0.0001;
-                    if (ox.Im == 0)
-                        ox.Im = 0.0001f;
+                    Cplx ox = FindCoordinates(xmin, ymin, xstep, ystep, i, j);
 
                     // find solution of equation using newton's iteration
                     float it = 0;
@@ -79,29 +66,54 @@ namespace INPTPZ1
                         it++;
                     }
 
-                    // find solution root number
-                    var known = false;
-                    var id = 0;
-                    for (int w = 0; w < koreny.Count; w++)
-                    {
-                        if (Math.Pow(ox.Re - koreny[w].Re, 2) + Math.Pow(ox.Im - koreny[w].Im, 2) <= 0.01)
-                        {
-                            known = true;
-                            id = w;
-                        }
-                    }
-                    if (!known)
-                    {
-                        koreny.Add(ox);
-                        id = koreny.Count;
-                        maxid = id + 1;
-                    }
+                    int id = FindSolutionRootNumber(koreny, ref maxid, ox);
 
                     ColorizePixels(bmp, clrs, i, j, it, id);
                 }
             }
 
             bmp.Save("../../../out.png");
+        }
+
+        private static Cplx FindCoordinates(double xmin, double ymin, double xstep, double ystep, int i, int j)
+        {
+            // find "world" coordinates of pixel
+            double x = xmin + j * xstep;
+            double y = ymin + i * ystep;
+
+            Cplx ox = new Cplx()
+            {
+                Re = x,
+                Im = (float)(y)
+            };
+
+            if (ox.Re == 0)
+                ox.Re = 0.0001;
+            if (ox.Im == 0)
+                ox.Im = 0.0001f;
+            return ox;
+        }
+
+        private static int FindSolutionRootNumber(List<Cplx> koreny, ref int maxid, Cplx ox)
+        {
+            var known = false;
+            var id = 0;
+            for (int w = 0; w < koreny.Count; w++)
+            {
+                if (Math.Pow(ox.Re - koreny[w].Re, 2) + Math.Pow(ox.Im - koreny[w].Im, 2) <= 0.01)
+                {
+                    known = true;
+                    id = w;
+                }
+            }
+            if (!known)
+            {
+                koreny.Add(ox);
+                id = koreny.Count;
+                maxid = id + 1;
+            }
+
+            return id;
         }
 
         private static void ColorizePixels(Bitmap bmp, Color[] clrs, int i, int j, float it, int id)
