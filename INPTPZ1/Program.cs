@@ -24,10 +24,10 @@ namespace INPTPZ1
         {
             // TODO: add parameters from args?
             Bitmap bmp = new Bitmap(300, 300);
-            double xmin = -1.5;
-            double xmax = 1.5;
-            double ymin = -1.5;
-            double ymax = 1.5;
+            double xmin = -1;
+            double xmax = 1;
+            double ymin = -1;
+            double ymax = 1;
 
             double xstep = (xmax - xmin) / 300;
             double ystep = (ymax - ymin) / 300;
@@ -38,7 +38,9 @@ namespace INPTPZ1
             p.Coe.Add(new Cplx() { Re = 1 });
             p.Coe.Add(Cplx.Zero);
             p.Coe.Add(Cplx.Zero);
-            //p.Coe.Add(Cplx.Zero);
+            p.Coe.Add(Cplx.Zero);
+            p.Coe.Add(Cplx.Zero);
+            p.Coe.Add(Cplx.Zero);
             p.Coe.Add(new Cplx() { Re = 1 });
             Poly pd = p.Derive();
 
@@ -90,8 +92,6 @@ namespace INPTPZ1
                         it++;
                     }
 
-                    //Console.ReadKey();
-
                     // find solution root number
                     var known = false;
                     var id = 0;
@@ -111,30 +111,14 @@ namespace INPTPZ1
                     }
 
                     // colorize pixel according to root number
-                    //int vv = id;
-                    //int vv = id * 50 + (int)it*5;
                     var vv = clrs[id % clrs.Length];
                     vv = Color.FromArgb(vv.R, vv.G, vv.B);
                     vv = Color.FromArgb(Math.Min(Math.Max(0, vv.R-(int)it*2), 255), Math.Min(Math.Max(0, vv.G - (int)it*2), 255), Math.Min(Math.Max(0, vv.B - (int)it*2), 255));
-                    //vv = Math.Min(Math.Max(0, vv), 255);
                     bmp.SetPixel(j, i, vv);
-                    //bmp.SetPixel(j, i, Color.FromArgb(vv, vv, vv));
                 }
             }
 
-            // TODO: delete I suppose...
-            //for (int i = 0; i < 300; i++)
-            //{
-            //    for (int j = 0; j < 300; j++)
-            //    {
-            //        Color c = bmp.GetPixel(j, i);
-            //        int nv = (int)Math.Floor(c.R * (255.0 / maxid));
-            //        bmp.SetPixel(j, i, Color.FromArgb(nv, nv, nv));
-            //    }
-            //}
-
-                    bmp.Save("../../../out.png");
-            //Console.ReadKey();
+            bmp.Save("../../../out.png");
         }
     }
 
