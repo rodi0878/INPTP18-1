@@ -97,15 +97,20 @@ namespace INPTPZ1
                         maxid = id + 1;
                     }
 
-                    // colorize pixel according to root number
-                    var vv = clrs[id % clrs.Length];
-                    vv = Color.FromArgb(vv.R, vv.G, vv.B);
-                    vv = Color.FromArgb(Math.Min(Math.Max(0, vv.R - (int)it * 2), 255), Math.Min(Math.Max(0, vv.G - (int)it * 2), 255), Math.Min(Math.Max(0, vv.B - (int)it * 2), 255));
-                    bmp.SetPixel(j, i, vv);
+                    ColorizePixels(bmp, clrs, i, j, it, id);
                 }
             }
 
             bmp.Save("../../../out.png");
+        }
+
+        private static void ColorizePixels(Bitmap bmp, Color[] clrs, int i, int j, float it, int id)
+        {
+            // colorize pixel according to root number
+            var vv = clrs[id % clrs.Length];
+            vv = Color.FromArgb(vv.R, vv.G, vv.B);
+            vv = Color.FromArgb(Math.Min(Math.Max(0, vv.R - (int)it * 2), 255), Math.Min(Math.Max(0, vv.G - (int)it * 2), 255), Math.Min(Math.Max(0, vv.B - (int)it * 2), 255));
+            bmp.SetPixel(j, i, vv);
         }
     }
 
