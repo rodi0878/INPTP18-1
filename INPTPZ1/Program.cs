@@ -43,28 +43,13 @@ namespace INPTPZ1
 
             var maxid = 0;
 
-            // TODO: cleanup!!!
             // for every pixel in image...
             for (int i = 0; i < 300; i++)
             {
                 for (int j = 0; j < 300; j++)
                 {
                     Cplx ox = FindCoordinates(xmin, ymin, xstep, ystep, i, j);
-
-                    // find solution of equation using newton's iteration
-                    float it = 0;
-                    for (int q = 0; q < 30; q++)
-                    {
-                        var diff = p.Eval(ox).Divide(pd.Eval(ox));
-                        ox = ox.Subtract(diff);
-
-                        //Console.WriteLine($"{q} {ox} -({diff})");
-                        if (Math.Pow(diff.Re, 2) + Math.Pow(diff.Im, 2) >= 0.5)
-                        {
-                            q--;
-                        }
-                        it++;
-                    }
+                    float it = findSolution(p, pd, ref ox);
 
                     int id = FindSolutionRootNumber(koreny, ref maxid, ox);
 
@@ -73,6 +58,25 @@ namespace INPTPZ1
             }
 
             bmp.Save("../../../out.png");
+        }
+
+        private static float findSolution(Poly p, Poly pd, ref Cplx ox)
+        {
+            // find solution of equation using newton's iteration
+            float it = 0;
+            for (int q = 0; q < 30; q++)
+            {
+                var diff = p.Eval(ox).Divide(pd.Eval(ox));
+                ox = ox.Subtract(diff);
+
+                if (Math.Pow(diff.Re, 2) + Math.Pow(diff.Im, 2) >= 0.5)
+                {
+                    q--;
+                }
+                it++;
+            }
+
+            return it;
         }
 
         private static Cplx FindCoordinates(double xmin, double ymin, double xstep, double ystep, int i, int j)
