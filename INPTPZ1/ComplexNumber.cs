@@ -8,7 +8,6 @@
 
         public ComplexNumber Multiply(ComplexNumber secondComplexNumber)
         {
-            // aRe*bRe + aRe*bIm*i + aIm*bRe*i + aIm*bIm*i*i
             return new ComplexNumber()
             {
                 Re = this.Re * secondComplexNumber.Re - this.Im * secondComplexNumber.Im,
@@ -41,11 +40,8 @@
 
         public ComplexNumber Divide(ComplexNumber secondComplexNumber)
         {
-            // (aRe + aIm*i) / (bRe + bIm*i)
-            // ((aRe + aIm*i) * (bRe - bIm*i)) / ((bRe + bIm*i) * (bRe - bIm*i))
-            //  bRe*bRe - bIm*bIm*i*i
-            var tempComplexNumber = this.Multiply(new ComplexNumber() { Re = secondComplexNumber.Re, Im = -secondComplexNumber.Im });
-            var tempSum = secondComplexNumber.Re * secondComplexNumber.Re + secondComplexNumber.Im * secondComplexNumber.Im;
+            ComplexNumber tempComplexNumber = this.Multiply(new ComplexNumber() { Re = secondComplexNumber.Re, Im = -secondComplexNumber.Im });
+            double tempSum = secondComplexNumber.Re * secondComplexNumber.Re + secondComplexNumber.Im * secondComplexNumber.Im;
 
             return new ComplexNumber()
             {
@@ -54,7 +50,8 @@
             };
         }
 
-        public static ComplexNumber FromRealNumber(double number) {
+        public static ComplexNumber FromRealNumber(double number)
+        {
             return new ComplexNumber() { Re = number };
         }
     }

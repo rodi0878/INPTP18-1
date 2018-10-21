@@ -13,13 +13,13 @@ namespace INPTPZ1
 
         public Polynomial Derive()
         {
-            Polynomial p = new Polynomial();
+            Polynomial derivative = new Polynomial();
             for (int i = 1; i < Coefficients.Count; i++)
             {
-                p.Coefficients.Add(Coefficients[i].Multiply(ComplexNumber.FromRealNumber(i)));
+                derivative.Coefficients.Add(Coefficients[i].Multiply(ComplexNumber.FromRealNumber(i)));
             }
 
-            return p;
+            return derivative;
         }
 
         public ComplexNumber Evaluate(ComplexNumber x)
@@ -27,7 +27,7 @@ namespace INPTPZ1
             ComplexNumber result = ComplexNumber.Zero;
             for (int i = 0; i < Coefficients.Count; i++)
             {
-                ComplexNumber coef = Coefficients[i];
+                ComplexNumber selectedCoefficient = Coefficients[i];
                 ComplexNumber bx = x;
                 int power = i;
 
@@ -36,10 +36,10 @@ namespace INPTPZ1
                     for (int j = 0; j < power - 1; j++)
                         bx = bx.Multiply(x);
 
-                    coef = coef.Multiply(bx);
+                    selectedCoefficient = selectedCoefficient.Multiply(bx);
                 }
 
-                result = result.Add(coef);
+                result = result.Add(selectedCoefficient);
             }
 
             return result;
@@ -47,20 +47,20 @@ namespace INPTPZ1
 
         public override string ToString()
         {
-            string resultStringRepresentation = "";
+            string resultString = "";
             for (int i = 0; i < Coefficients.Count; i++)
             {
-                resultStringRepresentation += Coefficients[i];
+                resultString += Coefficients[i];
                 if (i > 0)
                 {
                     for (int j = 0; j < i; j++)
                     {
-                        resultStringRepresentation += "x";
+                        resultString += "x";
                     }
                 }
-                resultStringRepresentation += " + ";
+                resultString += " + ";
             }
-            return resultStringRepresentation;
+            return resultString;
         }
     }
 }
