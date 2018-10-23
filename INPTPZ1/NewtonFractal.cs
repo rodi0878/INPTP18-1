@@ -14,7 +14,6 @@ namespace INPTPZ1
 {
     class NewtonFractal
     {
-        private Bitmap bmp;
         private int maxId = 0;
         private Polynomial polynom;
         private List<Complex> roots;
@@ -26,16 +25,15 @@ namespace INPTPZ1
         private int width;
         private int height;
         private Color[] colors;
-        private Complex ox;
-        private int id;
         private double eps1 = 0.0001;
+        private double eps2 = 0.001;
 
         public NewtonFractal(Polynomial polynom, double xMin, double xMax, double yMin, double yMax, int scale)
         {
             this.polynom = polynom;
             width = (int)Math.Round((xMax - xMin) * scale);
             height = (int)Math.Round((yMax - yMin) * scale);
-            bmp = new Bitmap(width, height);
+
             xstep = (xMax - xMin) / width;
             ystep = (yMax - yMin) / height;
             this.xMin = xMin;
@@ -47,23 +45,20 @@ namespace INPTPZ1
             colors = new Color[] { Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta };
         }
 
-        private int FindSolution()
+        private Complex FindSolution(Complex ox)
         {
             int iteration = 0;
-            for (int q = 0; q < 30; q++)
+            Complex diff;
+            do
             {
-                Complex diff = polynom.Eval(ox) / derivative.Eval(ox);
+                diff = polynom.Eval(ox) / derivative.Eval(ox);
                 ox = ox - diff;
-
-                if (Complex.Abs(diff) >= Math.Sqrt(0.5))
-                {
-                    q--;
-                }
                 iteration++;
-            }
-            return iteration;
+            } while (Complex.Abs(diff) >= eps2);
+            return ox;
         }
-        private int FindRootNumber()
+
+        private int FindRootNumber(Complex ox)
         {
             bool known = false;
             int rootNumber = 0;
@@ -99,15 +94,16 @@ namespace INPTPZ1
         }
         public Bitmap DrawFractal()
         {
+            Complex ox;
+            int id;
+            Bitmap bmp = new Bitmap(width, height);
             for (int i = 0; i < height; i++)
             {
                 for (int j = 0; j < width; j++)
                 {
                     ox = GetInitialValue(j, i);
-                    int iteration = FindSolution();
-
-                    id = FindRootNumber();
-
+                    ox = FindSolution(ox);
+                    id = FindRootNumber(ox);
                     Color vv = colors[id % colors.Length];
                     bmp.SetPixel(j, i, vv);
                 }
