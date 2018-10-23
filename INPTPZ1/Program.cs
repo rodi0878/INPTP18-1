@@ -1,23 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using System.Drawing;
-using System.Drawing.Design;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Drawing.Printing;
-using System.Drawing.Text;
-
 
 namespace INPTPZ1
 {
-    /// <summary>
-    /// This program should produce Newton fractals.
-    /// See more at: https://en.wikipedia.org/wiki/Newton_fractal
-    /// </summary>
     class Program
     {
         static void Main(string[] args)
@@ -29,55 +15,52 @@ namespace INPTPZ1
             double xmax = 1;
             double ymin = -1;
             double ymax = 1;
-
             double xstep = (xmax - xmin) / 300;
             double ystep = (ymax - ymin) / 300;
 
-            List<Cplx> koreny = new List<Cplx>();
-            Poly p = new Poly(rootsCount > 0 && rootsCount < 10 ? rootsCount : 0);
-            Poly pd = p.Derive();
+            List<ComplexNumber> koreny = new List<ComplexNumber>();
+            Polynome polynome = new Polynome(rootsCount > 0 && rootsCount < 10 ? rootsCount : 0);
+            Polynome polynomeDerivated = polynome.Derive();
 
-            Color[] clrs = new Color[]
+            Color[] colors = new Color[]
             {
                 Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Fuchsia, Color.Gold, Color.Cyan, Color.Magenta
             };
 
-            int maxid = 0;
-            maxid = NewMethod(bmp, xmin, ymin, xstep, ystep, koreny, p, pd, clrs, maxid);
+            
+            Process(bmp, xmin, ymin, xstep, ystep, koreny, polynome, polynomeDerivated, colors);
 
             bmp.Save("../../../out.png");
         }
 
-        private static int NewMethod(Bitmap bmp, double xmin, double ymin, double xstep, double ystep, List<Cplx> koreny, Poly p, Poly pd, Color[] clrs, int maxid)
+        private static void Process(Bitmap bmp, double xmin, double ymin, double xstep, double ystep, List<ComplexNumber> roots, Polynome polynome, Polynome polynomeDerivated, Color[] colors)
         {
+            int maxid = 0;
 
-            // for every pixel in image...
             for (int i = 0; i < 300; i++)
             {
                 for (int j = 0; j < 300; j++)
                 {
-                    Cplx ox = FindCoordinates(xmin, ymin, xstep, ystep, i, j);
-                    float it = FindSolution(p, pd, ref ox);
+                    ComplexNumber ox = FindCoordinates(xmin, ymin, xstep, ystep, i, j);
+                    float it = FindSolution(polynome, polynomeDerivated, ref ox);
+                    int id = FindSolutionRootNumber(roots, ref maxid, ox);
 
-                    int id = FindSolutionRootNumber(koreny, ref maxid, ox);
-
-                    ColorizePixels(bmp, clrs, i, j, it, id);
+                    ColorizePixels(bmp, colors, i, j, it, id);
                 }
             }
-
-            return maxid;
         }
 
-        private static float FindSolution(Poly p, Poly pd, ref Cplx ox)
+        private static float FindSolution(Polynome polynome, Polynome polynomeDerivated, ref ComplexNumber complexNumber)
         {
             // find solution of equation using newton's iteration
             float it = 0;
+
             for (int q = 0; q < 30; q++)
             {
-                Cplx diff = p.Eval(ox).Divide(pd.Eval(ox));
-                ox = ox.Subtract(diff);
+                ComplexNumber diff = polynome.Evaluate(complexNumber).Divide(polynomeDerivated.Evaluate(complexNumber));
+                complexNumber = complexNumber.Subtract(diff);
 
-                if (Math.Pow(diff.Re, 2) + Math.Pow(diff.Im, 2) >= 0.5)
+                if (Math.Pow(diff.RealPart, 2) + Math.Pow(diff.ImaginaryPart, 2) >= 0.5)
                 {
                     q--;
                 }
@@ -87,107 +70,115 @@ namespace INPTPZ1
             return it;
         }
 
-        private static Cplx FindCoordinates(double xmin, double ymin, double xstep, double ystep, int i, int j)
+        private static ComplexNumber FindCoordinates(double xmin, double ymin, double xstep, double ystep, int i, int j)
         {
             // find "world" coordinates of pixel
             double x = xmin + j * xstep;
             double y = ymin + i * ystep;
 
-            Cplx ox = new Cplx()
+            ComplexNumber ox = new ComplexNumber()
             {
-                Re = x,
-                Im = (float)(y)
+                RealPart = x,
+                ImaginaryPart = (float)(y)
             };
 
-            if (ox.Re == 0)
-                ox.Re = 0.0001;
-            if (ox.Im == 0)
-                ox.Im = 0.0001f;
+            if (ox.RealPart == 0)
+                ox.RealPart = 0.0001;
+            if (ox.ImaginaryPart == 0)
+                ox.ImaginaryPart = 0.0001f;
+
             return ox;
         }
 
-        private static int FindSolutionRootNumber(List<Cplx> koreny, ref int maxid, Cplx ox)
+        private static int FindSolutionRootNumber(List<ComplexNumber> roots, ref int maxId, ComplexNumber complexNumber)
         {
             bool known = false;
             int id = 0;
-            for (int w = 0; w < koreny.Count; w++)
+
+            for (int i = 0; i < roots.Count; i++)
             {
-                if (Math.Pow(ox.Re - koreny[w].Re, 2) + Math.Pow(ox.Im - koreny[w].Im, 2) <= 0.01)
+                if (Math.Pow(complexNumber.RealPart - roots[i].RealPart, 2)
+                    + Math.Pow(complexNumber.ImaginaryPart - roots[i].ImaginaryPart, 2) <= 0.01)
                 {
                     known = true;
-                    id = w;
+                    id = i;
                 }
             }
             if (!known)
             {
-                koreny.Add(ox);
-                id = koreny.Count;
-                maxid = id + 1;
+                roots.Add(complexNumber);
+                id = roots.Count;
+                maxId = id + 1;
             }
 
             return id;
         }
 
-        private static void ColorizePixels(Bitmap bmp, Color[] clrs, int i, int j, float it, int id)
+        private static void ColorizePixels(Bitmap bmp, Color[] colors, int i, int j, float it, int id)
         {
             // colorize pixel according to root number
-            Color vv = clrs[id % clrs.Length];
+            Color vv = colors[id % colors.Length];
+
             vv = Color.FromArgb(vv.R, vv.G, vv.B);
-            vv = Color.FromArgb(Math.Min(Math.Max(0, vv.R - (int)it * 2), 255), Math.Min(Math.Max(0, vv.G - (int)it * 2), 255), Math.Min(Math.Max(0, vv.B - (int)it * 2), 255));
+            vv = Color.FromArgb(Math.Min(Math.Max(0, vv.R - (int)it * 2), 255),
+                Math.Min(Math.Max(0, vv.G - (int)it * 2), 255),
+                Math.Min(Math.Max(0, vv.B - (int)it * 2), 255));
             bmp.SetPixel(j, i, vv);
         }
     }
 
-    class Poly
+    class Polynome
     {
-        public List<Cplx> Coe { get; set; }
+        public List<ComplexNumber> ComplexNumbers { get; set; }
 
-        public Poly()
+        public Polynome()
         {
-            Coe = new List<Cplx>();
+            ComplexNumbers = new List<ComplexNumber>();
         }
 
-        public Poly(int n)
+        public Polynome(int count)
         {
-            Coe = new List<Cplx>();
-            
-            Coe.Add(new Cplx() { Re = 1 });
-            for (int i = 0; i < n - 1; i++)
+            ComplexNumbers = new List<ComplexNumber>
             {
-                Coe.Add(Cplx.Zero);
+                new ComplexNumber() { RealPart = 1 }
+            };
+
+            for (int i = 0; i < count - 1; i++)
+            {
+                ComplexNumbers.Add(ComplexNumber.Zero);
             }
-            Coe.Add(new Cplx() { Re = 1 });
+            ComplexNumbers.Add(new ComplexNumber() { RealPart = 1 });
         }
 
-        public Poly Derive()
+        public Polynome Derive()
         {
-            Poly p = new Poly();
-            for (int i = 1; i < Coe.Count; i++)
+            Polynome p = new Polynome();
+
+            for (int i = 1; i < ComplexNumbers.Count; i++)
             {
-                p.Coe.Add(Coe[i].Multiply(new Cplx() { Re = i }));
+                p.ComplexNumbers.Add(ComplexNumbers[i].Multiply(new ComplexNumber() { RealPart = i }));
             }
 
             return p;
         }
 
-        public Cplx Eval(Cplx x)
+        public ComplexNumber Evaluate(ComplexNumber x)
         {
-            Cplx s = Cplx.Zero;
-            for (int i = 0; i < Coe.Count; i++)
+            ComplexNumber s = ComplexNumber.Zero;
+
+            for (int i = 0; i < ComplexNumbers.Count; i++)
             {
-                Cplx coef = Coe[i];
-                Cplx bx = x;
+                ComplexNumber complexNumber = ComplexNumbers[i];
+                ComplexNumber complexNumberEvaluated = x;
                 int power = i;
 
                 if (i > 0)
                 {
                     for (int j = 0; j < power - 1; j++)
-                        bx = bx.Multiply(x);
-
-                    coef = coef.Multiply(bx);
+                        complexNumberEvaluated = complexNumberEvaluated.Multiply(x);
+                    complexNumber = complexNumber.Multiply(complexNumberEvaluated);
                 }
-
-                s = s.Add(coef);
+                s = s.Add(complexNumber);
             }
 
             return s;
@@ -195,81 +186,78 @@ namespace INPTPZ1
 
         public override string ToString()
         {
-            string s = "";
-            for (int i = 0; i < Coe.Count; i++)
+            string output = "";
+
+            for (int i = 0; i < ComplexNumbers.Count; i++)
             {
-                s += Coe[i];
+                output += ComplexNumbers[i];
                 if (i > 0)
                 {
                     for (int j = 0; j < i; j++)
-                    {
-                        s += "x";
-                    }
+                        output += "x";
                 }
-                s += " + ";
+                output += " + ";
             }
-            return s;
+
+            return output;
         }
     }
 
-    class Cplx
+    class ComplexNumber
     {
-        public double Re { get; set; }
-        public float Im { get; set; }
+        public double RealPart { get; set; }
+        public float ImaginaryPart { get; set; }
 
-        public readonly static Cplx Zero = new Cplx()
+        public readonly static ComplexNumber Zero = new ComplexNumber()
         {
-            Re = 0,
-            Im = 0
+            RealPart = 0,
+            ImaginaryPart = 0
         };
 
-        public Cplx Multiply(Cplx b)
+        public ComplexNumber Multiply(ComplexNumber násobitel)
         {
-            Cplx a = this;
-            // aRe*bRe + aRe*bIm*i + aIm*bRe*i + aIm*bIm*i*i
-            return new Cplx()
+            // aRe*bRe + aRe*bIm*i + aIm*bRe*i - aIm*bIm*i*i
+            return new ComplexNumber()
             {
-                Re = a.Re * b.Re - a.Im * b.Im,
-                Im = (float)(a.Re * b.Im + a.Im * b.Re)
+                RealPart = this.RealPart * násobitel.RealPart - this.ImaginaryPart * násobitel.ImaginaryPart,
+                ImaginaryPart = (float)(this.RealPart * násobitel.ImaginaryPart + this.ImaginaryPart * násobitel.RealPart)
             };
         }
 
-        public Cplx Add(Cplx b)
+        public ComplexNumber Add(ComplexNumber summand)
         {
-            Cplx a = this;
-            return new Cplx()
+            return new ComplexNumber()
             {
-                Re = a.Re + b.Re,
-                Im = a.Im + b.Im
+                RealPart = this.RealPart + summand.RealPart,
+                ImaginaryPart = this.ImaginaryPart + summand.ImaginaryPart
             };
         }
-        public Cplx Subtract(Cplx b)
+        public ComplexNumber Subtract(ComplexNumber subtrahend)
         {
-            Cplx a = this;
-            return new Cplx()
+            return new ComplexNumber()
             {
-                Re = a.Re - b.Re,
-                Im = a.Im - b.Im
+                RealPart = this.RealPart - subtrahend.RealPart,
+                ImaginaryPart = this.ImaginaryPart - subtrahend.ImaginaryPart
             };
         }
 
         public override string ToString()
         {
-            return $"({Re} + {Im}i)";
+            return $"({RealPart} + {ImaginaryPart}i)";
         }
 
-        internal Cplx Divide(Cplx b)
+        internal ComplexNumber Divide(ComplexNumber divisor)
         {
             // (aRe + aIm*i) / (bRe + bIm*i)
             // ((aRe + aIm*i) * (bRe - bIm*i)) / ((bRe + bIm*i) * (bRe - bIm*i))
-            //  bRe*bRe - bIm*bIm*i*i
-            Cplx tmp = this.Multiply(new Cplx() { Re = b.Re, Im = -b.Im });
-            double tmp2 = b.Re * b.Re + b.Im * b.Im;
+            //  bRe*bRe + bIm*bIm*i*i
+            ComplexNumber thisNegated = this.Multiply(new ComplexNumber() { RealPart = divisor.RealPart, ImaginaryPart = -divisor.ImaginaryPart });
+            double divideWith = divisor.RealPart * divisor.RealPart + divisor.ImaginaryPart * divisor.ImaginaryPart;
 
-            return new Cplx()
+            return new ComplexNumber()
             {
-                Re = tmp.Re / tmp2,
-                Im = (float)(tmp.Im / tmp2)
+                RealPart = thisNegated.RealPart / divideWith,
+                ImaginaryPart = (float)(thisNegated.ImaginaryPart / divideWith)
             };
         }
     }
