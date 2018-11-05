@@ -61,7 +61,7 @@ namespace INPTPZ1
             };
         }
 
-        internal ComplexNumber Divide(ComplexNumber divisorComplexNumber)
+        public ComplexNumber Divide(ComplexNumber divisorComplexNumber)
         {   
             var multiplier = ComplexNumberWithNegativeImaginePart(divisorComplexNumber.Re, divisorComplexNumber.Im);
             
