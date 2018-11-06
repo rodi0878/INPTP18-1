@@ -70,5 +70,66 @@ namespace INPTPZ1.Program
             vv = Color.FromArgb(Math.Min(Math.Max(0, vv.R - (int)it * 2), 255), Math.Min(Math.Max(0, vv.G - (int)it * 2), 255), Math.Min(Math.Max(0, vv.B - (int)it * 2), 255));
             bmp.SetPixel(j, i, vv);
         }
+
+
+        public static Bitmap InitializeBitmap(string[] args)
+        {
+            Bitmap picture;
+            if (ValidateInputArguments(args))
+            {
+                int size = int.Parse(args[0]);
+                picture = new Bitmap(size, size);
+            }
+            else
+            {
+                picture = new Bitmap(300, 300);
+            }
+
+            return picture;
+        }
+
+        private static bool ValidateInputArguments(string[] args)
+        {
+            if (args.Length > 1 || args.Length <= 0)
+            {
+                return false;
+            }
+
+            bool validation = int.TryParse(args[0], out int result);
+
+            if (!validation)
+            {
+                return false;
+            }
+            else return true;
+        }
+
+        public static void CreateFinalPicture(Bitmap picture, double xmin, double ymin, double xstep, double ystep, Polynom polynom, Polynom polynomDerived, Color[] colors)
+        {
+            List<ComplexNumber> koreny = new List<ComplexNumber>();
+
+            for (int i = 0; i < picture.Size.Height; i++)
+            {
+                for (int j = 0; j < picture.Size.Width; j++)
+                {
+                    double x = xmin + j * xstep;
+                    double y = ymin + i * ystep;
+
+                    ComplexNumber ox = new ComplexNumber()
+                    {
+                        Real = x,
+                        Imaginary = y
+                    };
+
+                    FixIfZeroAppeared(ox);
+
+                    double it = SolveEquationByNewtonIteration(polynom, polynomDerived, ref ox);
+
+                    int id = FindSolutionRootNumber(koreny, ox);
+
+                    ColorizePixel(picture, colors, i, j, it, id);
+                }
+            }
+        }
     }
 }
