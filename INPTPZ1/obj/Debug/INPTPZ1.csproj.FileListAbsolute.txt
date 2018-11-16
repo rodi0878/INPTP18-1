@@ -1,7 +1,0 @@
-C:\Users\houzv\Documents\Škola\UPCE_MGR\ZS_18_19\INPTP\Semestralni_prace\INPTP_SP01\INPTP18-1\INPTPZ1\bin\Debug\INPTPZ1.exe.config
-C:\Users\houzv\Documents\Škola\UPCE_MGR\ZS_18_19\INPTP\Semestralni_prace\INPTP_SP01\INPTP18-1\INPTPZ1\bin\Debug\INPTPZ1.exe
-C:\Users\houzv\Documents\Škola\UPCE_MGR\ZS_18_19\INPTP\Semestralni_prace\INPTP_SP01\INPTP18-1\INPTPZ1\bin\Debug\INPTPZ1.pdb
-C:\Users\houzv\Documents\Škola\UPCE_MGR\ZS_18_19\INPTP\Semestralni_prace\INPTP_SP01\INPTP18-1\INPTPZ1\obj\Debug\INPTPZ1.csprojAssemblyReference.cache
-C:\Users\houzv\Documents\Škola\UPCE_MGR\ZS_18_19\INPTP\Semestralni_prace\INPTP_SP01\INPTP18-1\INPTPZ1\obj\Debug\INPTPZ1.csproj.CoreCompileInputs.cache
-C:\Users\houzv\Documents\Škola\UPCE_MGR\ZS_18_19\INPTP\Semestralni_prace\INPTP_SP01\INPTP18-1\INPTPZ1\obj\Debug\INPTPZ1.exe
-C:\Users\houzv\Documents\Škola\UPCE_MGR\ZS_18_19\INPTP\Semestralni_prace\INPTP_SP01\INPTP18-1\INPTPZ1\obj\Debug\INPTPZ1.pdb
