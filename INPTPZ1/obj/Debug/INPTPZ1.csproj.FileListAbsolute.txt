@@ -1,7 +1,0 @@
-C:\Users\user\Desktop\skola\INPTP18-1\INPTPZ1\obj\Debug\INPTPZ1.csprojResolveAssemblyReference.cache
-C:\Users\user\Desktop\skola\INPTP18-1\INPTPZ1\obj\Debug\INPTPZ1.csproj.CoreCompileInputs.cache
-C:\Users\user\Desktop\skola\INPTP18-1\INPTPZ1\bin\Debug\;.exe.config
-C:\Users\user\Desktop\skola\INPTP18-1\INPTPZ1\bin\Debug\;.exe
-C:\Users\user\Desktop\skola\INPTP18-1\INPTPZ1\bin\Debug\;.pdb
-C:\Users\user\Desktop\skola\INPTP18-1\INPTPZ1\obj\Debug\;.exe
-C:\Users\user\Desktop\skola\INPTP18-1\INPTPZ1\obj\Debug\;.pdb
